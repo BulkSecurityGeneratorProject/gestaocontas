@@ -1,0 +1,98 @@
+enum TipoPessoa {
+    FISICA, JURIDICA
+}
+
+entity Pessoa {
+	documento String,
+    nome String,
+    telefone String,
+    tipoPessoa TipoPessoa
+}
+
+entity Conta {
+	identificacao String,
+    ativa Boolean,
+    responsavel Pessoa,
+    valorConsolidado Double
+}
+
+enum TipoLancamento {
+    CREDITO, DEBITO
+}
+
+entity Lancamento {
+	tipo TipoLancamento,
+    conta Conta,
+    valor Double,
+    dataHora Instant
+}
+
+enum EstadoMidia {
+    LIBERADA, BLOQUEADA
+}
+
+entity Midia {
+	idenetificacao String,
+    estado EstadoMidia,
+    conta Conta,
+    limite Double,
+    responsavel Pessoa
+}
+
+entity AgendamentoMidia {
+	midia Midia,
+    novoEstado EstadoMidia,
+    novoValor Double,
+    responsavel Pessoa
+}
+
+entity Cadastro {
+	ultimoEnvio Instant,
+    ultimoSequencial Long
+}
+
+enum TipoConfiguracao {
+	URL_JMS_ENVIO_CADASTRO
+}
+
+entity Configuracao {
+	tipo TipoConfiguracao,
+    valor String
+}
+
+relationship OneToMany {
+	Conta{responsavel} to Pessoa
+}
+
+relationship OneToMany {
+	Lancamento{conta} to Conta
+}
+
+relationship OneToMany {
+	Midia{conta} to Conta
+}
+
+
+relationship OneToMany {
+	Midia{responsavel} to Pessoa
+}
+
+relationship OneToMany {
+	AgendamentoMidia{responsavel} to Pessoa
+}
+
+relationship OneToMany {
+	AgendamentoMidia{midia} to Midia
+}
+
+// Set pagination options
+paginate Lancamento, Pessoa, Midia with infinite-scroll
+
+// Use Data Transfert Objects (DTO)
+// dto * with mapstruct
+
+// Set service options to all except few
+service all with serviceImpl
+
+// Set an angular suffix
+// angularSuffix * with mySuffix
